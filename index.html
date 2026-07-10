@@ -243,8 +243,12 @@
                         <option value="Espacio Personal">Salida Individual (Tranquilidad)</option>
                     </select>
 
-                    <label for="fecha">Fecha del Evento</label>
-                    <input type="date" id="fecha" required>
+                    <label>Rango de Fechas del Evento</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="date" id="fechaInicio" required title="Fecha de inicio">
+                        <span style="display: flex; align-items: center; color: #718096; font-weight: 500;">al</span>
+                        <input type="date" id="fechaFin" required title="Fecha de fin">
+                    </div>
 
                     <label for="motivo">Motivo / Argumentos de peso</label>
                     <textarea id="motivo" rows="3" placeholder="Ej. Prometo portarme bien / Es el cumple de Fer / Te extraño mucho..." required></textarea>
@@ -342,11 +346,16 @@
         formSolicitud.addEventListener('submit', (e) => {
             e.preventDefault();
             
+            const fInicio = document.getElementById('fechaInicio').value;
+            const fFin = document.getElementById('fechaFin').value;
+            // Si elige el mismo día en ambos, solo mostramos una fecha
+            const fechaTexto = (fInicio === fFin) ? fInicio : `${fInicio} al ${fFin}`;
+
             const nuevaSolicitud = {
                 id: Date.now(),
                 solicitante: selectSolicitante.value, // Se toma el valor fijo del usuario actual
                 tipo: document.getElementById('tipo').value,
-                fecha: document.getElementById('fecha').value,
+                fecha: fechaTexto,
                 motivo: document.getElementById('motivo').value,
                 estado: 'Pendiente'
             };
@@ -356,7 +365,8 @@
             
             // Limpiar formulario pero mantener el solicitante fijo
             document.getElementById('tipo').value = 'Permiso de Salida';
-            document.getElementById('fecha').value = '';
+            document.getElementById('fechaInicio').value = '';
+            document.getElementById('fechaFin').value = '';
             document.getElementById('motivo').value = '';
         });
 
