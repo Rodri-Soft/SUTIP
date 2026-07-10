@@ -24,17 +24,73 @@
             align-items: center;
         }
 
+        /* ----- ESTILOS DE LOGIN ----- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .login-card {
+            background: var(--bg-card);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .login-card h1 { margin-top: 0; }
+        .error-msg {
+            color: #e53e3e;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: none;
+            background: #fff5f5;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* ----- ESTILOS PRINCIPALES ----- */
+        #app-content {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            flex-direction: column;
+            align-items: center;
+        }
+
         header {
             text-align: center;
             margin-bottom: 30px;
+            width: 100%;
+            position: relative;
         }
 
         h1 { color: var(--primary); margin-bottom: 5px; }
         p { color: #718096; margin-top: 0; }
 
+        .btn-logout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: transparent;
+            color: #a0aec0;
+            border: 1px solid #cbd5e0;
+            width: auto;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+        }
+        .btn-logout:hover {
+            background-color: #e2e8f0;
+            color: var(--dark);
+        }
+
         .container {
             width: 100%;
-            max-width: 800px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
@@ -42,6 +98,7 @@
 
         @media (max-width: 768px) {
             .container { grid-template-columns: 1fr; }
+            .btn-logout { position: static; margin-top: 15px; }
         }
 
         .card {
@@ -75,11 +132,11 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-family: inherit;
         }
 
@@ -88,7 +145,7 @@
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
@@ -96,8 +153,6 @@
         }
 
         button:hover { background-color: #e03e4d; }
-        button.btn-sec { background-color: var(--secondary); color: var(--dark); }
-        button.btn-sec:hover { background-color: #35bfae; }
 
         /* Estilos de las solicitudes */
         .solicitud-item {
@@ -136,7 +191,7 @@
             margin-top: 10px;
         }
 
-        .acciones button { padding: 5px 10px; font-size: 0.85rem; }
+        .acciones button { padding: 8px; font-size: 0.85rem; }
         .btn-aprobar { background-color: #48bb78; }
         .btn-aprobar:hover { background-color: #38a169; }
         .btn-denegar { background-color: #f56565; }
@@ -145,74 +200,151 @@
 </head>
 <body>
 
-    <header>
-        <h1>🏛️ SUTIP</h1>
-        <p>Sistema Único de Trámites Internos de Pareja</p>
-    </header>
-
-    <div class="container">
-        
-        <!-- FORMULARIO DE SOLICITUD -->
-        <div class="card">
-            <h2>📝 Nueva Solicitud de Visado</h2>
-            <form id="form-solicitud">
-                <label for="solicitante">¿Quién solicita?</label>
-                <select id="solicitante" required>
-                    <option value="Él">Él 🧑</option>
-                    <option value="Ella">Ella 👩</option>
-                </select>
-
-                <label for="tipo">Tipo de Trámite</label>
-                <select id="tipo" required>
-                    <option value="Permiso de Salida">Permiso de Salida (Amigos/Fiesta)</option>
-                    <option value="Cita Oficial">Cita Oficial (Cena/Cine Juntos)</option>
-                    <option value="Espacio Personal">Salida Individual (Tranquilidad)</option>
-                </select>
-
-                <label for="fecha">Fecha del Evento</label>
-                <input type="date" id="fecha" required>
-
-                <label for="motivo">Motivo / Argumentos de peso</label>
-                <textarea id="motivo" rows="3" placeholder="Ej. Prometo portarme bien / Es el cumple de Fer / Te extraño mucho..." required></textarea>
-
-                <button type="submit">Enviar a Mesa de Control</button>
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-screen">
+        <div class="login-card">
+            <h1>🏛️ SUTIP</h1>
+            <p style="margin-bottom: 5px; font-weight: 600; color: var(--dark);">Sistema Único de Trámites Internos de Pareja</p>
+            <p style="font-size: 0.9rem;">Control de Acceso</p>
+            <br>
+            <form id="form-login">
+                <input type="email" id="login-email" placeholder="Correo electrónico" required>
+                <input type="password" id="login-password" placeholder="Contraseña" required>
+                <div id="login-error" class="error-msg">Correo o contraseña incorrectos.</div>
+                <button type="submit">Ingresar</button>
             </form>
         </div>
+    </div>
 
-        <!-- PANEL DE CONTROL / DECISIONES -->
-        <div class="card">
-            <h2>⚖️ Panel de Aprobación</h2>
-            <p style="font-size: 0.85rem;">Aquí el miembro de la pareja correspondiente debe dictaminar sentencia.</p>
-            <div id="lista-pendientes">
-                <!-- Se llena con JS -->
+    <!-- CONTENIDO PRINCIPAL DE LA APP -->
+    <div id="app-content">
+        <header>
+            <h1>🏛️ SUTIP</h1>
+            <p>Sistema Único de Trámites Internos de Pareja</p>
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </header>
+
+        <div class="container">
+            
+            <!-- FORMULARIO DE SOLICITUD -->
+            <div class="card">
+                <h2>📝 Nueva Solicitud de Visado</h2>
+                <form id="form-solicitud">
+                    <label for="solicitante">¿Quién solicita?</label>
+                    <select id="solicitante" required>
+                        <option value="Él">Él 🧑</option>
+                        <option value="Ella">Ella 👩</option>
+                    </select>
+
+                    <label for="tipo">Tipo de Trámite</label>
+                    <select id="tipo" required>
+                        <option value="Permiso de Salida">Permiso de Salida (Amigos/Fiesta)</option>
+                        <option value="Cita Oficial">Cita Oficial (Cena/Cine Juntos)</option>
+                        <option value="Espacio Personal">Salida Individual (Tranquilidad)</option>
+                    </select>
+
+                    <label for="fecha">Fecha del Evento</label>
+                    <input type="date" id="fecha" required>
+
+                    <label for="motivo">Motivo / Argumentos de peso</label>
+                    <textarea id="motivo" rows="3" placeholder="Ej. Prometo portarme bien / Es el cumple de Fer / Te extraño mucho..." required></textarea>
+
+                    <button type="submit">Enviar a Mesa de Control</button>
+                </form>
             </div>
-        </div>
 
-        <!-- HISTORIAL DE PERMISOS -->
-        <div class="card full-width">
-            <h2>📋 Historial del Consulado</h2>
-            <div id="historial-solicitudes">
-                <!-- Se llena con JS -->
+            <!-- PANEL DE CONTROL / DECISIONES -->
+            <div class="card">
+                <h2>⚖️ Panel de Aprobación</h2>
+                <p style="font-size: 0.85rem; margin-bottom: 15px;">Aquí puedes revisar y dictaminar las solicitudes que te envíen.</p>
+                <div id="lista-pendientes">
+                    <!-- Se llena con JS -->
+                </div>
             </div>
-        </div>
 
+            <!-- HISTORIAL DE PERMISOS -->
+            <div class="card full-width">
+                <h2>📋 Historial del Consulado</h2>
+                <div id="historial-solicitudes">
+                    <!-- Se llena con JS -->
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
-        // Cargar datos iniciales de localStorage
+        // --- SISTEMA DE LOGIN ---
+        const USUARIOS = {
+            'joserodrigosanchezmendez@gmail.com': { pass: 'rodo123', rol: 'Él' },
+            'nohemileonla@gmail.com': { pass: 'erika123', rol: 'Ella' }
+        };
+
+        const loginScreen = document.getElementById('login-screen');
+        const appContent = document.getElementById('app-content');
+        const formLogin = document.getElementById('form-login');
+        const loginError = document.getElementById('login-error');
+        const selectSolicitante = document.getElementById('solicitante');
+        
+        let usuarioActual = localStorage.getItem('sutip_usuario');
+
+        // Revisar si ya hay sesión iniciada al cargar la página
+        if (usuarioActual) {
+            iniciarApp(usuarioActual);
+        }
+
+        // Manejar el envío del formulario de login
+        formLogin.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+
+            if (USUARIOS[email] && USUARIOS[email].pass === pass) {
+                usuarioActual = USUARIOS[email].rol;
+                localStorage.setItem('sutip_usuario', usuarioActual);
+                loginError.style.display = 'none';
+                iniciarApp(usuarioActual);
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
+        // Función para mostrar la app y ocultar el login
+        function iniciarApp(rol) {
+            loginScreen.style.display = 'none';
+            appContent.style.display = 'flex';
+            
+            // Bloquear el select para que solo puedan pedir trámites a su propio nombre
+            selectSolicitante.value = rol;
+            selectSolicitante.disabled = true;
+
+            renderizar();
+        }
+
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            localStorage.removeItem('sutip_usuario');
+            usuarioActual = null;
+            appContent.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            formLogin.reset();
+        }
+
+
+        // --- LÓGICA DE LA APP (TRÁMITES) ---
         let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
 
-        const form = document.getElementById('form-solicitud');
+        const formSolicitud = document.getElementById('form-solicitud');
         const listaPendientes = document.getElementById('lista-pendientes');
         const historial = document.getElementById('historial-solicitudes');
 
         // Guardar nueva solicitud
-        form.addEventListener('submit', (e) => {
+        formSolicitud.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const nuevaSolicitud = {
                 id: Date.now(),
-                solicitante: document.getElementById('solicitante').value,
+                solicitante: selectSolicitante.value, // Se toma el valor fijo del usuario actual
                 tipo: document.getElementById('tipo').value,
                 fecha: document.getElementById('fecha').value,
                 motivo: document.getElementById('motivo').value,
@@ -220,8 +352,12 @@
             };
 
             solicitudes.unshift(nuevaSolicitud);
-            actualizarStorage Y_Rendereo();
-            form.reset();
+            actualizarStorage_Y_Rendereo();
+            
+            // Limpiar formulario pero mantener el solicitante fijo
+            document.getElementById('tipo').value = 'Permiso de Salida';
+            document.getElementById('fecha').value = '';
+            document.getElementById('motivo').value = '';
         });
 
         // Cambiar estado (Aprobar / Denegar)
@@ -232,10 +368,10 @@
                 }
                 return sol;
             });
-            actualizarStorage Y_Rendereo();
+            actualizarStorage_Y_Rendereo();
         }
 
-        function actualizarStorage Y_Rendereo() {
+        function actualizarStorage_Y_Rendereo() {
             localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
             renderizar();
         }
@@ -253,7 +389,12 @@
             let pendientesContador = 0;
 
             solicitudes.forEach(sol => {
+                // Quien autoriza es el contrario al que solicita
                 const autorizaQuien = sol.solicitante === 'Él' ? 'Ella' : 'Él';
+                
+                // Solo se muestran botones de acción si la solicitud NO es mía (yo no me puedo auto-aprobar) 
+                // y está en estado Pendiente
+                const soyElAutorizador = (usuarioActual === autorizaQuien);
                 
                 const htmlItem = `
                     <div class="solicitud-item ${sol.estado.toLowerCase()}">
@@ -264,17 +405,24 @@
                         
                         ${sol.estado === 'Pendiente' ? `
                             <div class="acciones">
-                                <small style="display:block; margin-bottom:5px; width:100%; color:#718096;">Dictamina: ${autorizaQuien}</small>
-                                <button class="btn-aprobar" onclick="resolverSolicitud(${sol.id}, 'Aprobado')">👍 Otorgar Visado</button>
-                                <button class="btn-denegar" onclick="resolverSolicitud(${sol.id}, 'Denegado')">👎 Denegar</button>
+                                <small style="display:block; margin-bottom:5px; width:100%; color:#718096;">
+                                    ${soyElAutorizador ? '¡Es tu turno de decidir!' : 'Esperando respuesta de ' + autorizaQuien}
+                                </small>
+                                ${soyElAutorizador ? `
+                                    <button class="btn-aprobar" onclick="resolverSolicitud(${sol.id}, 'Aprobado')">👍 Aprobar</button>
+                                    <button class="btn-denegar" onclick="resolverSolicitud(${sol.id}, 'Denegado')">👎 Denegar</button>
+                                ` : ''}
                             </div>
                         ` : ''}
                     </div>
                 `;
 
                 if (sol.estado === 'Pendiente') {
-                    listaPendientes.insertAdjacentHTML('beforeend', htmlItem);
-                    pendientesContador++;
+                    // Si soy yo quien tiene que aprobar, lo pongo en mi lista de pendientes
+                    if (soyElAutorizador) {
+                        listaPendientes.insertAdjacentHTML('beforeend', htmlItem);
+                        pendientesContador++;
+                    }
                 }
                 
                 // Todo va al historial
@@ -282,12 +430,10 @@
             });
 
             if (pendientesContador === 0) {
-                listaPendientes.innerHTML = '<p class="meta">✨ ¡Paz en el hogar! No hay solicitudes pendientes.</p>';
+                listaPendientes.innerHTML = '<p class="meta">✨ ¡Paz en el hogar! No tienes solicitudes pendientes por revisar.</p>';
             }
         }
 
-        // Ejecutar render inicial
-        renderizar();
     </script>
 </body>
 </html>
