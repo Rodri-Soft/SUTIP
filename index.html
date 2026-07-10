@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUTIP - Sistema Único de Trámites Internos de Pareja</title>
+    <style>
+        :root {
+            --primary: #ff4b5c;
+            --secondary: #43d8c4;
+            --dark: #2d3748;
+            --light: #f7fafc;
+            --bg-card: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 5px; }
+        p { color: #718096; margin-top: 0; }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background-color: #e03e4d; }
+        button.btn-sec { background-color: var(--secondary); color: var(--dark); }
+        button.btn-sec:hover { background-color: #35bfae; }
+
+        /* Estilos de las solicitudes */
+        .solicitud-item {
+            border-left: 5px solid #cbd5e0;
+            background: #f8fafc;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+        }
+
+        .solicitud-item.pendiente { border-left-color: #ecc94b; }
+        .solicitud-item.aprobado { border-left-color: #48bb78; background: #f0fff4; }
+        .solicitud-item.denegado { border-left-color: #f56565; background: #fff5f5; }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            float: right;
+        }
+        .badge.pendiente { background: #fef08a; color: #854d0e; }
+        .badge.aprobado { background: #bbf7d0; color: #166534; }
+        .badge.denegado { background: #fecaca; color: #991b1b; }
+
+        .meta {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .acciones button { padding: 5px 10px; font-size: 0.85rem; }
+        .btn-aprobar { background-color: #48bb78; }
+        .btn-aprobar:hover { background-color: #38a169; }
+        .btn-denegar { background-color: #f56565; }
+        .btn-denegar:hover { background-color: #e53e3e; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏛️ SUTIP</h1>
+        <p>Sistema Único de Trámites Internos de Pareja</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- FORMULARIO DE SOLICITUD -->
+        <div class="card">
+            <h2>📝 Nueva Solicitud de Visado</h2>
+            <form id="form-solicitud">
+                <label for="solicitante">¿Quién solicita?</label>
+                <select id="solicitante" required>
+                    <option value="Él">Él 🧑</option>
+                    <option value="Ella">Ella 👩</option>
+                </select>
+
+                <label for="tipo">Tipo de Trámite</label>
+                <select id="tipo" required>
+                    <option value="Permiso de Salida">Permiso de Salida (Amigos/Fiesta)</option>
+                    <option value="Cita Oficial">Cita Oficial (Cena/Cine Juntos)</option>
+                    <option value="Espacio Personal">Salida Individual (Tranquilidad)</option>
+                </select>
+
+                <label for="fecha">Fecha del Evento</label>
+                <input type="date" id="fecha" required>
+
+                <label for="motivo">Motivo / Argumentos de peso</label>
+                <textarea id="motivo" rows="3" placeholder="Ej. Prometo portarme bien / Es el cumple de Fer / Te extraño mucho..." required></textarea>
+
+                <button type="submit">Enviar a Mesa de Control</button>
+            </form>
+        </div>
+
+        <!-- PANEL DE CONTROL / DECISIONES -->
+        <div class="card">
+            <h2>⚖️ Panel de Aprobación</h2>
+            <p style="font-size: 0.85rem;">Aquí el miembro de la pareja correspondiente debe dictaminar sentencia.</p>
+            <div id="lista-pendientes">
+                <!-- Se llena con JS -->
+            </div>
+        </div>
+
+        <!-- HISTORIAL DE PERMISOS -->
+        <div class="card full-width">
+            <h2>📋 Historial del Consulado</h2>
+            <div id="historial-solicitudes">
+                <!-- Se llena con JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Cargar datos iniciales de localStorage
+        let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+
+        const form = document.getElementById('form-solicitud');
+        const listaPendientes = document.getElementById('lista-pendientes');
+        const historial = document.getElementById('historial-solicitudes');
+
+        // Guardar nueva solicitud
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const nuevaSolicitud = {
+                id: Date.now(),
+                solicitante: document.getElementById('solicitante').value,
+                tipo: document.getElementById('tipo').value,
+                fecha: document.getElementById('fecha').value,
+                motivo: document.getElementById('motivo').value,
+                estado: 'Pendiente'
+            };
+
+            solicitudes.unshift(nuevaSolicitud);
+            actualizarStorage Y_Rendereo();
+            form.reset();
+        });
+
+        // Cambiar estado (Aprobar / Denegar)
+        function resolverSolicitud(id, nuevoEstado) {
+            solicitudes = solicitudes.map(sol => {
+                if(sol.id === id) {
+                    return { ...sol, estado: nuevoEstado };
+                }
+                return sol;
+            });
+            actualizarStorage Y_Rendereo();
+        }
+
+        function actualizarStorage Y_Rendereo() {
+            localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+            renderizar();
+        }
+
+        function renderizar() {
+            listaPendientes.innerHTML = '';
+            historial.innerHTML = '';
+
+            if (solicitudes.length === 0) {
+                listaPendientes.innerHTML = '<p class="meta">No hay trámites pendientes de revisión.</p>';
+                historial.innerHTML = '<p class="meta">El historial consular está vacío.</p>';
+                return;
+            }
+
+            let pendientesContador = 0;
+
+            solicitudes.forEach(sol => {
+                const autorizaQuien = sol.solicitante === 'Él' ? 'Ella' : 'Él';
+                
+                const htmlItem = `
+                    <div class="solicitud-item ${sol.estado.toLowerCase()}">
+                        <span class="badge ${sol.estado.toLowerCase()}">${sol.estado}</span>
+                        <strong>${sol.solicitante}</strong> pide: <strong>${sol.tipo}</strong>
+                        <div class="meta">Fecha: ${sol.fecha}</div>
+                        <p style="margin: 8px 0 0; font-style: italic;">"${sol.motivo}"</p>
+                        
+                        ${sol.estado === 'Pendiente' ? `
+                            <div class="acciones">
+                                <small style="display:block; margin-bottom:5px; width:100%; color:#718096;">Dictamina: ${autorizaQuien}</small>
+                                <button class="btn-aprobar" onclick="resolverSolicitud(${sol.id}, 'Aprobado')">👍 Otorgar Visado</button>
+                                <button class="btn-denegar" onclick="resolverSolicitud(${sol.id}, 'Denegado')">👎 Denegar</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                if (sol.estado === 'Pendiente') {
+                    listaPendientes.insertAdjacentHTML('beforeend', htmlItem);
+                    pendientesContador++;
+                }
+                
+                // Todo va al historial
+                historial.insertAdjacentHTML('beforeend', htmlItem);
+            });
+
+            if (pendientesContador === 0) {
+                listaPendientes.innerHTML = '<p class="meta">✨ ¡Paz en el hogar! No hay solicitudes pendientes.</p>';
+            }
+        }
+
+        // Ejecutar render inicial
+        renderizar();
+    </script>
+</body>
+</html>
